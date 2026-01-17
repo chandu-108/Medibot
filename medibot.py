@@ -36,7 +36,7 @@ def load_llm(huggingface_repo_id, HF_TOKEN):
 
 
 def main():
-    st.title("Ask Chatbot!")
+    st.title("Medical Chatbot - Ask me anything!")
 
     if 'messages' not in st.session_state:
         st.session_state.messages = []
