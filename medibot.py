@@ -2,14 +2,15 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 
+# Load environment variables first
+load_dotenv()
+
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from langchain_groq import ChatGroq
-
-load_dotenv()
 
 
 DB_FAISS_PATH="vectorstore/db_faiss"
@@ -67,6 +68,12 @@ def main():
         #TODO: Create a Groq API key and add it to .env file
         
         try: 
+            # Debug: Check if API key is loaded
+            groq_api_key = os.environ.get("GROQ_API_KEY")
+            if not groq_api_key:
+                st.error("GROQ_API_KEY not found in environment variables. Please check your .env file.")
+                return
+            
             vectorstore=get_vectorstore()
             if vectorstore is None:
                 st.error("Failed to load the vector store")
@@ -76,7 +83,7 @@ def main():
             llm = ChatGroq(
                 model="llama-3.3-70b-versatile",  # Current production model
                 temperature=0.0,
-                groq_api_key=os.environ.get("GROQ_API_KEY"),
+                groq_api_key=groq_api_key,
             )
             retriever = vectorstore.as_retriever(search_kwargs={'k':3})
             
